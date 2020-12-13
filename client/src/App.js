@@ -8,10 +8,16 @@ function App() {
 	const [listOfFriends, setListOfFriends] = useState([]);
 
 	//name: name = name of variable - property [name, setName]
+	//.then() updates the page with the new name. THe .post adds it to the database
 	const addFriend = () => {
-		Axios.post('http://localhost:3001/addFriend', {name: name, age: age});
+		Axios.post('http://localhost:3001/addFriend', {name: name, age: age}).then(
+			() => {
+				setListOfFriends([...listOfFriends, {name: name, age: age}]);
+			}
+		);
 	};
 
+	//useEffect: Call when rednered.
 	useEffect(() => {
 		Axios.get('http://localhost:3001/read')
 			.then((response) => {
@@ -41,13 +47,20 @@ function App() {
 				></input>
 				<button onClick={addFriend}>Add Friend</button>
 			</div>
-			{listOfFriends.map((val) => {
-				return (
-					<div>
-						{val.name} {val.age}
-					</div>
-				);
-			})}
+			<div className='listOfFriends'>
+				{listOfFriends.map((val) => {
+					return (
+						<div className='friendContainer'>
+							<div className='friend'>
+								<h3>Name: {val.name}</h3>
+								<h3> Age:{val.age}</h3>
+							</div>
+							<button>update</button>
+							<button id='removeBtn'>Delete</button>
+						</div>
+					);
+				})}
+			</div>
 		</div>
 	);
 }
