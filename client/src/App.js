@@ -17,11 +17,29 @@ function App() {
 		);
 	};
 
+	//update friend info on update button.
+	const updateFriend = (id) => {
+		const newAge = prompt('Enter new Age');
+		Axios.put('http://localhost:3001/update', {newAge: newAge, id: id}).then(
+			() => {
+				setListOfFriends(
+					listOfFriends.map((val) => {
+						return val._id === id
+							? {_id: id, name: val.name, age: newAge}
+							: val;
+					})
+				);
+			}
+		);
+	};
+
 	//useEffect: Call when rednered.
 	useEffect(() => {
 		Axios.get('http://localhost:3001/read')
 			.then((response) => {
 				setListOfFriends(response.data);
+				const update = prompt('Enter val: ');
+				console.log(update);
 			})
 			.catch(() => {
 				console.log('ERROR');
@@ -55,7 +73,13 @@ function App() {
 								<h3>Name: {val.name}</h3>
 								<h3> Age:{val.age}</h3>
 							</div>
-							<button>update</button>
+							<button
+								onClick={() => {
+									updateFriend(val._id);
+								}}
+							>
+								update
+							</button>
 							<button id='removeBtn'>Delete</button>
 						</div>
 					);
