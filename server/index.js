@@ -11,7 +11,7 @@ app.use(express.json()); //middleware
 mongoose.connect(
 	'mongodb://localhost:27017/tutorialmern?readPreference=primary&appname=MongoDB%20Compass&ssl=false',
 
-	{useNewUrlParser: true}
+	{useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false}
 );
 
 //req, what you get fro the frontend.
@@ -22,7 +22,7 @@ app.post('/addFriend', async (req, res) => {
 
 	const friend = new FriendModel({name: name, age: age}); //not inserted into DB yet
 	await friend.save(); //using async to wait for friend!
-	res.send('Success');
+	res.send(friend);
 });
 
 app.get('/read', async (req, res) => {
@@ -48,8 +48,13 @@ app.put('/update', async (req, res) => {
 	} catch (error) {
 		console.log(error);
 	}
-
 	res.send('Updated!!!');
+});
+
+app.delete('/delete/:id', async (req, res) => {
+	const id = req.params.id;
+	await FriendModel.findByIdAndRemove(id).exec();
+	res.send('item deleted!!!');
 });
 
 app.listen(3001, () => {

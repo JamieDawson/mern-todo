@@ -11,8 +11,11 @@ function App() {
 	//.then() updates the page with the new name. THe .post adds it to the database
 	const addFriend = () => {
 		Axios.post('http://localhost:3001/addFriend', {name: name, age: age}).then(
-			() => {
-				setListOfFriends([...listOfFriends, {name: name, age: age}]);
+			(response) => {
+				setListOfFriends([
+					...listOfFriends,
+					{_id: response.data._id, name: name, age: age},
+				]);
 			}
 		);
 	};
@@ -38,13 +41,23 @@ function App() {
 		Axios.get('http://localhost:3001/read')
 			.then((response) => {
 				setListOfFriends(response.data);
-				const update = prompt('Enter val: ');
-				console.log(update);
+				//	const update = prompt('Enter val: ');
+				//	console.log(update);
 			})
 			.catch(() => {
 				console.log('ERROR');
 			});
 	}, []);
+
+	const deleteFriend = (id) => {
+		Axios.delete(`http://localhost:3001/delete/${id}`).then(() => {
+			setListOfFriends(
+				listOfFriends.filter((val) => {
+					return val._id !== id;
+				})
+			);
+		});
+	};
 
 	return (
 		<div className='App'>
@@ -80,7 +93,14 @@ function App() {
 							>
 								update
 							</button>
-							<button id='removeBtn'>Delete</button>
+							<button
+								id='removeBtn'
+								onClick={() => {
+									deleteFriend(val._id);
+								}}
+							>
+								Delete
+							</button>
 						</div>
 					);
 				})}
